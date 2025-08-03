@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL para desenvolvimento
+  postgres-dev:
+    image: postgres:15
+    container_name: fingestor_postgres_dev
+    environment:
+      POSTGRES_DB: fingestor_dev
+      POSTGRES_USER: fingestor
+      POSTGRES_PASSWORD: fingestor123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - fingestor_dev_network
+
+  # Redis para desenvolvimento
+  redis-dev:
+    image: redis:7-alpine
+    container_name: fingestor_redis_dev
+    ports:
+      - "6380:6379"
+    networks:
+      - fingestor_dev_network
+
+  # Adminer para gerenciar banco de dados
+  adminer:
+    image: adminer
+    container_name: fingestor_adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - fingestor_dev_network
+    depends_on:
+      - postgres-dev
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  fingestor_dev_network:
+    driver: bridge
+

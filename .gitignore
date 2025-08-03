@@ -1,0 +1,44 @@
+# === BACKEND (Python) ===
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.env
+.env
+.env.*
+
+# === FRONTEND (Node/Vite/React/Vue) ===
+node_modules/
+dist/
+build/
+*.log
+
+# === VSCode ===
+.vscode/
+*.code-workspace
+
+# === SISTEMAS OPERACIONAIS ===
+.DS_Store
+Thumbs.db
+
+# === DOCKER ===
+*.pid
+*.seed
+docker-compose.override.yml
+
+# === TESTES ===
+coverage/
+htmlcov/
+.tox/
+.nox/
+.cache/
+pytest_cache/
+
+# === GIT ===
+*.swp
+*.swo
+
+# === LOGS E TEMP ===
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL (para produção)
+  postgres:
+    image: postgres:15
+    container_name: fingestor_postgres
+    environment:
+      POSTGRES_DB: fingestor_db
+      POSTGRES_USER: fingestor
+      POSTGRES_PASSWORD: fingestor123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fingestor_network
+
+  # Backend FastAPI
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fingestor_backend
+    environment:
+      - DATABASE_URL=postgresql://fingestor:fingestor123@postgres:5432/fingestor_db
+      - SECRET_KEY=your-production-secret-key-here
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000", "http://frontend:3000"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+    networks:
+      - fingestor_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fingestor_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - fingestor_network
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api/v1
+    command: npm run dev -- --host
+
+  # Redis (para cache e sessões - opcional)
+  redis:
+    image: redis:7-alpine
+    container_name: fingestor_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - fingestor_network
+
+volumes:
+  postgres_data:
+
+networks:
+  fingestor_network:
+    driver: bridge
+
